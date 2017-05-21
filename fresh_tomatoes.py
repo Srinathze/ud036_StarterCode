@@ -12,6 +12,7 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
+logger.propagate = False
 
 
 # Styles and scripting for the page
@@ -66,6 +67,9 @@ main_page_head = '''
             left: 0;
             top: 0;
             background-color: white;
+        }
+        .col-lg-3{
+            height:342px;
         }
     </style>
     <script type="text/javascript" charset="utf-8">
@@ -133,7 +137,7 @@ main_page_content = '''
 
 # A single movie entry html template
 movie_tile_content = '''
-<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
+<div class="col-md-6 col-lg-3 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
     <img src="{poster_image_url}" width="220" height="342">
     <h2>{movie_title}</h2>
 </div>
@@ -181,5 +185,6 @@ def open_movies_page(movies):
     logger.debug("url" + url)
     webbrowser.open('file://' + url, new=2)
 
-movies = entertainment_center.entertainment_center().getmovies()
+## calls the open_movies_page to create an html page and sends the movies list
+movies = entertainment_center.entertainment_center().getMoviesFromAPI("1")
 open_movies_page(movies)
