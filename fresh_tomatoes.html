@@ -1,21 +1,4 @@
-import webbrowser
-import os
-import re
-import media
-import entertainment_center
-import logging
 
-logger = logging.getLogger()
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
-
-
-# Styles and scripting for the page
-main_page_head = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,11 +77,7 @@ main_page_head = '''
         });
     </script>
 </head>
-'''
 
-
-# The main page layout and title bar
-main_page_content = '''
   <body>
     <!-- Trailer Video Modal -->
     <div class="modal" id="trailer">
@@ -124,62 +103,47 @@ main_page_content = '''
       </div>
     </div>
     <div class="container">
-      {movie_tiles}
+      
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="Rt2LHkSwdPQ" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg" width="220" height="342">
+    <h2>Interstellar</h2>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="tWapqpCEO7Y" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185/2HjngGzVK3NTzptEtsT8E0Hi3ZB.jpg" width="220" height="342">
+    <h2>Beauty and the Beast</h2>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="wUn05hdkhjM" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185/y4MBh0EjBlMuOzv9axM4qJlmhzz.jpg" width="220" height="342">
+    <h2>Guardians of the Galaxy -2</h2>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="H0VW6sg50Pk" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185/ewVHnq4lUiovxBCu64qxq5bT2lu.jpg" width="220" height="342">
+    <h2>Alien:Covenant</h2>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="vve9TtFg9wM" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185/iNpz2DgTsTMPaDRZq2tnbqjL2vF.jpg" width="220" height="342">
+    <h2>The Fate of the Furious</h2>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="XaE_9pfybL4" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185/45Y1G5FEgttPAwjTYic6czC9xCn.jpg" width="220" height="342">
+    <h2>Logan</h2>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="naQr0uTrH_s" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185/tkt9xR1kNX5R9rCebASKck44si2.jpg" width="220" height="342">
+    <h2>Pirates of the Caribbean</h2>
+</div>
+
+<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="Zvjmt4pwtdg" data-toggle="modal" data-target="#trailer">
+    <img src="http://image.tmdb.org/t/p/w185/eSVtBB2PVFbQiFWC7CQi3EjIZnn.jpg" width="220" height="342">
+    <h2>Sing</h2>
+</div>
+
     </div>
   </body>
 </html>
-'''
-
-
-# A single movie entry html template
-movie_tile_content = '''
-<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
-    <img src="{poster_image_url}" width="220" height="342">
-    <h2>{movie_title}</h2>
-</div>
-'''
-
-
-def create_movie_tiles_content(movies):
-    # The HTML content for this section of the page
-    content = ''
-    for movie in movies:
-        # Extract the youtube ID from the url
-        logger.debug("poster_url:" + movie.poster_image_url)
-        logger.debug("youtube_url:" + movie.trailer_youtube_url)
-        logger.debug("title:" + movie.title)
-        youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', movie.trailer_youtube_url)
-        youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', movie.trailer_youtube_url)
-        trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
-                              else None)
-
-        # Append the tile for the movie with its content filled in
-        content += movie_tile_content.format(
-            movie_title=movie.title,
-            poster_image_url=movie.poster_image_url,
-            trailer_youtube_id=trailer_youtube_id
-        )
-    return content
-
-
-def open_movies_page(movies):
-    # Create or overwrite the output file
-    output_file = open('fresh_tomatoes.html', 'w')
-
-    # Replace the movie tiles placeholder generated content
-    rendered_content = main_page_content.format(
-        movie_tiles=create_movie_tiles_content(movies))
-
-    # Output the file
-    output_file.write(main_page_head + rendered_content)
-    output_file.close()
-
-    # open the output file in the browser (in a new tab, if possible)
-    url = os.path.abspath(output_file.name)
-    logger.debug("url" + url)
-    webbrowser.open('file://' + url, new=2)
-
-movies = entertainment_center.entertainment_center().getmovies()
-open_movies_page(movies)
