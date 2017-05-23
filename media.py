@@ -10,6 +10,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 logger.propagate = False
 
+
 class Movie(object):
     title = ""
     poster_image_url = ""
@@ -19,4 +20,3 @@ class Movie(object):
         self.title = title
         self.poster_image_url = poster_image_url
         self.trailer_youtube_url = trailer_youtube_url
-
